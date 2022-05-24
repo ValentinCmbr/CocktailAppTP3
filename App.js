@@ -1,16 +1,34 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import {FlatList, StyleSheet, Text, View} from 'react-native';
+import {useEffect, useState} from "react";
 
 export default function App() {
+  const [nom, setNom] = useState(null)
+    const[image, setImage] = useState(null)
+    const[Liste, setListe] = useState(Cocktails)
+    const[Cocktails, setCocktails] = useState(null);
 
   const RequeteCocktail = () =>
-      
+      fetch(`www.thecocktaildb.com/api/json/v1/1/random.php`)
+          .then(function (response){
+            return response.json();
+          }).then(function(response){
+            setCocktails(response.drinks)
+      })
 
+    useEffect( () => {
+        for(let i; i < 10; i++){
+            RequeteCocktail();
+        }
+        })
+
+    useEffect( () => {
+        setListe[...Liste, Cocktails ];
+    })
 
   return (
     <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
+    <FlatList data={nom} renderItem={({item}) => <Text>{nom} </Text> }/>
     </View>
   );
 }
