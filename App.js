@@ -1,43 +1,67 @@
-import { StatusBar } from 'expo-status-bar';
-import {FlatList, StyleSheet, Text, View} from 'react-native';
+import {StatusBar} from 'expo-status-bar';
+import {FlatList, Image, StyleSheet, Text, View, SafeAreaView, TouchableOpacity, Modal, Pressable} from 'react-native';
 import {useEffect, useState} from "react";
-
 export default function App() {
-  const [nom, setNom] = useState(null)
-    const[image, setImage] = useState(null)
-    const[Liste, setListe] = useState(Cocktails)
-    const[Cocktails, setCocktails] = useState(null);
 
-  const RequeteCocktail = () =>
-      fetch(`www.thecocktaildb.com/api/json/v1/1/random.php`)
-          .then(function (response){
-            return response.json();
-          }).then(function(response){
-            setCocktails(response.drinks)
-      })
+    const [icon, setIcon] = useState(null);
 
-    useEffect( () => {
-        for(let i; i < 10; i++){
-            RequeteCocktail();
-        }
-        })
+    const [cocktails, setCocktail] = useState(null);
+    const [modalVisible, setModalVisible] = useState(false);
+    const getCocktail = () => {
+        fetch('https://www.thecocktaildb.com/api/json/v1/1/search.php?f=e')
+            .then(response => response.json())
+            .then(data => {
+                    setCocktail(data.drinks);
+            })}
 
-    useEffect( () => {
-        setListe[...Liste, Cocktails ];
-    })
+    useEffect(() => {
+        (async () => {
+            getCocktail()
+        })();
+        },
+        []);
 
-  return (
-    <View style={styles.container}>
-    <FlatList data={nom} renderItem={({item}) => <Text>{nom} </Text> }/>
-    </View>
-  );
+    const Item = ({title}) => (
+            <View style={styles.item}>
+                <Image style={styles.tinyLogo} source={{uri: title.strDrinkThumb}}/>
+                <Text style={styles.title}>{title.strDrink}</Text>
+            </View>
+    );
+
+    const renderItem = ({ item }) => (
+        <Item title={item} />
+    );
+
+    return (
+        <SafeAreaView style={styles.container}>
+            <FlatList data={cocktails} renderItem={renderItem}></FlatList>
+        </SafeAreaView>
+    );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
+    container: {
+        flex: 1,
+        backgroundColor: '#eb7d34',
+        color:'black',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    tinyLogo: {
+        width: 120,
+        height: 120,
+        borderRadius:4
+    },
+    title: {
+        fontSize: 18,
+        marginTop:15,
+        textAlign:'center',
+    },
+    item: {
+        backgroundColor: '#',
+        padding: 20,
+        marginVertical: 8,
+        marginHorizontal: 16,
+        borderRadius: 10,
+    },
 });
